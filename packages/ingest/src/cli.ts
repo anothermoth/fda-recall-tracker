@@ -1,6 +1,16 @@
+import { config } from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { createLocalDependencies, createPool } from "./deps.js";
+import { createLocalDependencies, createPoolFromEnv } from "./deps.js";
 import { runIngest } from "./runIngest.js";
+
+const rootDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../..",
+);
+config({ path: path.join(rootDir, ".env") });
+
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
@@ -20,7 +30,7 @@ async function main(): Promise<void> {
     throw new Error("--page-size must be a positive integer");
   }
 
-  const pool = createPool();
+  const pool = await createPoolFromEnv();
   try {
     const result = await runIngest(
       { total, pageSize },

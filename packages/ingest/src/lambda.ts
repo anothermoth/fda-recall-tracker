@@ -1,4 +1,10 @@
-import { createLocalDependencies, createPool } from "./deps.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { createArchiveRaw } from "./archiveRaw.js";
+import {
+  createIngestDependencies,
+  createPool,
+  resolveDatabaseUrl,
+} from "./deps.js";
 import { runIngest } from "./runIngest.js";
 
 export type IngestHandlerEvent = {
@@ -7,24 +13,36 @@ export type IngestHandlerEvent = {
 };
 
 /**
- * Future AWS Lambda entry point.
- *
- * Step 1 reuses the same `runIngest` core as the local CLI and talks
- * to Postgres through DATABASE_URL. A later step will:
- *   - attach an `archiveRaw` implementation that writes each page to S3
- *   - swap the pool for a Lambda-friendly connection strategy
- *   - wire this file up as the function handler
- *
- * Do not add AWS SDK usage here yet.
+ * AWS Lambda entry point used by EventBridge (and by a manual invoke).
+ * It is the same `runIngest` core as the local CLI, with an optional
+ * `archiveRaw` hook that writes each openFDA page to S3.
  */
 export async function handler(
   event: IngestHandlerEvent = {},
-): Promise<{ ok: true; requested: number; fetched: number; inserted: number; updated: number; skipped: number; pages: number }> {
-  const pool = createPool();
+): Promise<{
+  ok: true;
+  requested: number;
+  fetched: number;
+  inserted: number;
+  updated: number;
+  skipped: number;
+  pages: number;
+}> {
+  const pool = createPool(await resolveDatabaseUrl());
   try {
+    const bucket = process.env.ARCHIVE_BUCKET;
+    const archiveRaw = bucket
+      ? createArchiveRaw({
+          client: new S3Client({}),
+          bucket,
+          prefix: process.env.ARCHIVE_PREFIX ?? "ingest/",
+        })
+      : undefined;
+
+    const limit = event.limit ?? Number(process.env.INGEST_LIMIT ?? 200);
     const result = await runIngest(
-      { total: event.limit ?? 100, pageSize: event.pageSize },
-      createLocalDependencies(pool),
+      { total: limit, pageSize: event.pageSize },
+      createIngestDependencies(pool, { archiveRaw }),
     );
     return { ok: true, ...result };
   } finally {

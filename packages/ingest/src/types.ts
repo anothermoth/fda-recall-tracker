@@ -65,8 +65,8 @@ export type IngestDependencies = {
   fetchPage: (params: FetchPageParams) => Promise<OpenFdaPage>;
   upsertRecalls: (rows: RecallRow[]) => Promise<{ inserted: number; updated: number }>;
   /**
-   * Optional hook for a later AWS step: archive the raw JSON page to S3
-   * before or after upsert. The local CLI leaves this unimplemented.
+   * Optional hook that archives the raw JSON page (the Lambda writes
+   * it to S3). The local CLI leaves this unimplemented.
    */
   archiveRaw?: (page: OpenFdaPage, params: FetchPageParams) => Promise<void>;
 };
