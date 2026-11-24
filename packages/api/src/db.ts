@@ -1,13 +1,7 @@
-import { config } from "dotenv";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { resolveDatabaseUrl } from "./databaseUrl.js";
 
-const rootDir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../..",
-);
-config({ path: path.join(rootDir, ".env") });
+export { resolveDatabaseUrl };
 
 export function getDatabaseUrl(): string {
   const url = process.env.DATABASE_URL;
@@ -18,5 +12,20 @@ export function getDatabaseUrl(): string {
 }
 
 export function createPool(connectionString = getDatabaseUrl()): pg.Pool {
-  return new pg.Pool({ connectionString });
+  return new pg.Pool({
+    connectionString,
+    // Lambdas should reuse a small pool across warm invocations.
+    max: process.env.AWS_LAMBDA_FUNCTION_NAME ? 2 : 10,
+  });
+}
+
+let cachedPool: pg.Pool | undefined;
+
+/** Resolve DATABASE_URL or Secrets Manager once and reuse the pool. */
+export async function getLambdaPool(): Promise<pg.Pool> {
+  if (cachedPool) {
+    return cachedPool;
+  }
+  cachedPool = createPool(await resolveDatabaseUrl());
+  return cachedPool;
 }
