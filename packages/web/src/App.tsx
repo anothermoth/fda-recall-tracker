@@ -8,7 +8,7 @@ export function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<RecallListPage />} />
-        <Route path="recalls/:recallNumber" element={<RecallDetailPage />} />
+        <Route path="recall/:recallNumber" element={<RecallDetailPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

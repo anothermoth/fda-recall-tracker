@@ -16,7 +16,7 @@ describe("RecallResults", () => {
 
     expect(screen.getByRole("link", { name: /atorvastatin/i })).toHaveAttribute(
       "href",
-      "/recalls/D-0001-2026?q=statin&page=2",
+      "/recall/D-0001-2026?q=statin&page=2",
     );
     expect(screen.getByText("D-0001-2026")).toBeInTheDocument();
     expect(screen.getByText("Class I")).toBeInTheDocument();

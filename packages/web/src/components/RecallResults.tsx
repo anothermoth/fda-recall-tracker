@@ -35,7 +35,7 @@ export function RecallResults({ recalls, filters }: RecallResultsProps) {
               <td data-label="Product">
                 <Link
                   className="results__link"
-                  to={`/recalls/${encodeURIComponent(recall.recall_number)}${query}`}
+                  to={`/recall/${encodeURIComponent(recall.recall_number)}${query}`}
                 >
                   <span className="results__product">
                     {recall.product_description || "No product description"}

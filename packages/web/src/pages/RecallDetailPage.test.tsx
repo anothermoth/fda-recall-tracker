@@ -18,7 +18,7 @@ describe("RecallDetailPage", () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ data: recall }));
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithRouter(<App />, { route: "/recalls/D-0001-2026?q=statin&page=2" });
+    renderWithRouter(<App />, { route: "/recall/D-0001-2026?q=statin&page=2" });
 
     expect(screen.getByRole("status")).toHaveTextContent("Loading recall…");
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
@@ -46,7 +46,7 @@ describe("RecallDetailPage", () => {
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse({ error: "Recall not found" }, 404)),
     );
-    renderWithRouter(<App />, { route: "/recalls/D-9999-2099" });
+    renderWithRouter(<App />, { route: "/recall/D-9999-2099" });
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Recall not found");
     expect(screen.getByText(/D-9999-2099/)).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe("RecallDetailPage", () => {
       .mockResolvedValueOnce(jsonResponse({ data: sampleRecalls[0] }));
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithRouter(<App />, { route: "/recalls/D-0001-2026" });
+    renderWithRouter(<App />, { route: "/recall/D-0001-2026" });
     expect(await screen.findByRole("alert")).toHaveTextContent("Internal server error");
 
     await user.click(screen.getByRole("button", { name: "Try again" }));
