@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fda-recall-tracker-db
+    environment:
+      POSTGRES_USER: fda
+      POSTGRES_PASSWORD: fda
+      POSTGRES_DB: fda_recalls
+    ports:
+      - "5432:5432"
+    volumes:
+      - fda_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fda -d fda_recalls"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  fda_pg_data:

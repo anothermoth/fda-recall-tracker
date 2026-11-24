@@ -1,0 +1,6 @@
+{
+  "name": "@fda-recall-tracker/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "React + TypeScript dashboard placeholder. Implemented in a later step."
+}
