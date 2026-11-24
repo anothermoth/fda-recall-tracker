@@ -2,10 +2,11 @@
   "name": "fda-recall-tracker",
   "private": true,
   "version": "0.1.0",
-  "description": "Track FDA drug recalls from openFDA with Postgres, an Express API, and a React dashboard.",
+  "description": "Track FDA drug recalls from openFDA with Postgres, an Express API, a React dashboard, and AWS CDK.",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "infra"
   ],
   "engines": {
     "node": ">=20"
@@ -19,7 +20,8 @@
     "ingest": "tsx packages/ingest/src/cli.ts",
     "dev:api": "npm run dev -w @fda-recall-tracker/api",
     "dev:web": "npm run dev -w @fda-recall-tracker/web",
-    "dev": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\""
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
+    "synth": "npm run synth -w @fda-recall-tracker/infra"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -36,6 +38,7 @@
     "globals": "^16.4.0"
   },
   "allowScripts": {
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
   }
 }

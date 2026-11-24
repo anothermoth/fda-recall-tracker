@@ -10,6 +10,8 @@ export default tseslint.config(
       "**/dist/**",
       "**/coverage/**",
       "**/build/**",
+      "**/cdk.out/**",
+      "**/__snapshots__/**",
     ],
   },
   js.configs.recommended,
