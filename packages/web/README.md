@@ -1,10 +1,10 @@
 # @fda-recall-tracker/web
 
-The React + TypeScript (Vite) dashboard will live here in a later step.
+React + TypeScript dashboard (Vite) for searching and inspecting FDA drug recalls.
 
-Planned for step 2:
+```bash
+# from the repo root, with the API already running on port 3001
+npm run dev:web
+```
 
-- Vite + React + TypeScript app
-- Search and filter recalls (full text, classification, state, date range)
-- Paginated results from `GET /recalls`
-- A detail view that uses `GET /recalls/:recallNumber`
+The Vite dev server proxies `/recalls` and `/health` to the API, so you can open `http://127.0.0.1:5173/` without configuring CORS. For a production build, set `VITE_API_BASE_URL` to the API origin. See the root README for the full local setup.
