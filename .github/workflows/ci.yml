@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Install, lint, typecheck, test, and build
+    name: Install, lint, typecheck, test, synth, and build
     runs-on: ubuntu-latest
 
     services:
@@ -28,6 +28,9 @@ jobs:
     env:
       DATABASE_URL: postgres://fda:fda@localhost:5432/fda_recalls
       DATABASE_READONLY_URL: postgres://fda_app_readonly:fda_app_readonly@localhost:5432/fda_recalls
+      CDK_DEFAULT_ACCOUNT: "000000000000"
+      CDK_DEFAULT_REGION: us-east-1
+      DATABASE_SECRET_ARN: arn:aws:secretsmanager:us-east-1:000000000000:secret:fda-recall-tracker/database-url-AbCdEf
 
     steps:
       - name: Check out repository
@@ -57,3 +60,5 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Synthesize CDK
+        run: npm run synth
