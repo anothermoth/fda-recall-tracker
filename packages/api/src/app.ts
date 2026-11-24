@@ -1,3 +1,4 @@
+import cors from "cors";
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import type { Pool } from "pg";
 import { healthRouter } from "./routes/health.js";
@@ -7,6 +8,12 @@ export function createApp(pool: Pool): Express {
   const app = express();
   app.disable("x-powered-by");
   app.use(express.json());
+  app.use(
+    cors({
+      origin: parseCorsOrigins(process.env.CORS_ORIGIN),
+    }),
+  );
+
 
   app.use(healthRouter(pool));
   app.use(recallsRouter(pool));
@@ -32,4 +39,16 @@ export function createApp(pool: Pool): Express {
   });
 
   return app;
+}
+
+function parseCorsOrigins(
+  value: string | undefined,
+): boolean | string[] {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === "*") {
+    // Reflect the request origin. Fine for this public, read-only API
+    // when no explicit allowlist is configured.
+    return true;
+  }
+  return trimmed.split(",").map((origin) => origin.trim()).filter(Boolean);
 }
