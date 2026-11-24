@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Install, lint, typecheck, and test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: fda
+          POSTGRES_PASSWORD: fda
+          POSTGRES_DB: fda_recalls
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fda -d fda_recalls"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://fda:fda@localhost:5432/fda_recalls
+      DATABASE_READONLY_URL: postgres://fda_app_readonly:fda_app_readonly@localhost:5432/fda_recalls
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run database migrations
+        run: npm run migrate
+
+      - name: Test
+        run: npm test
